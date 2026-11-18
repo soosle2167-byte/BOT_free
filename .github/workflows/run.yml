@@ -24,7 +24,7 @@ jobs:
 
       - name: Install Libraries
         run: |
-          pip install -r requirements.txt
+          pip install pyrogram tgcrypto telethon python-dotenv requests
 
       - name: Pull Data & Secrets from Private Repo
         run: |
@@ -55,7 +55,7 @@ jobs:
           ) &
           SYNC_PID=$!
           set +e
-          # تشغيل البوت لمدة 340 دقيقة
+          # تشغيل البوت لمدة 340 دقيقة (أقل من الحد الأقصى لـ GitHub Actions بـ 20 دقيقة)
           timeout 340m python -u main.py
           echo $? > bot_exit_code.txt
           kill $SYNC_PID 2>/dev/null || true
