@@ -33,8 +33,24 @@ jobs:
           cp -rf temp_data/* .
           cp -f temp_data/.env . 2>/dev/null || true
 
+          # التأكد التلقائي من وجود main.py في المسار الرئيسي
+          if [ ! -f main.py ]; then
+            FOUND_FILE=$(find . -maxdepth 3 -name "main.py" -not -path "./temp_data/*" | head -n 1)
+            if [ -n "$FOUND_FILE" ]; then
+              echo "Moving $FOUND_FILE to root main.py"
+              cp -f "$FOUND_FILE" ./main.py
+            fi
+          fi
+
       - name: Run Bot Silently & Auto-Sync
         run: |
+          if [ ! -f main.py ]; then
+            echo "❌ خطأ: ملف main.py غير موجود في الصفحة الرئيسية للريبو!"
+            echo "الملفات الموجودة حالياً:"
+            ls -la
+            exit 1
+          fi
+
           # مزامنة دورية في الخلفية كل 150 ثانية لحفظ أي روابط مستخدمة أو إشعارات جديدة في الريبو الخاص
           (
             while true; do
